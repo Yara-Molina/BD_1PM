@@ -1,5 +1,5 @@
 import sys
-sys.path.append("C:\\Documentos\\Cuatrimestre 4\\APIREST\\db")
+sys.path.append("C:\\Users\\cachi\\OneDrive\\Escritorio\\vsc\\FastApi\\APIREST (2)\\APIREST\\db")
 
 from sqlalchemy import Column, Integer, String, ForeignKey, TIMESTAMP, DateTime
 from db.database import Base
