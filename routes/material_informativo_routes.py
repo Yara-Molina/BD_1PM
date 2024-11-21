@@ -24,7 +24,6 @@ def get_all_material_informativo(db: Session = Depends(get_db)):
     all_material_informativo = db.query(MaterialInformativo).all()
     return all_material_informativo
 
-# Ruta para crear un nuevo material informativo
 @router.post('/material-informativo', status_code=status.HTTP_201_CREATED, response_model=MaterialInformativoResponse)
 def create_material_informativo(
     post_material_informativo: MaterialInformativoRequest,
@@ -74,7 +73,7 @@ def update_material_informativo(
     if material_informativo is None:
         raise HTTPException(status_code=404, detail="Material informativo no encontrado")
     
-    # Actualizar los campos del material informativo con los datos nuevos
+
     material_informativo.contenido = material_informativo_data.contenido
     material_informativo.create_at = material_informativo_data.create_at
     material_informativo.create_by = material_informativo_data.create_by
