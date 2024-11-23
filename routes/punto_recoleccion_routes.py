@@ -2,7 +2,6 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pymongo.collection import Collection
 from typing import List
-
 from db.database import get_mongo_db
 from schemas.punto_recoleccion_schemas import PuntoRecoleccionSchema
 from middlewares.token import decode_access_token
@@ -19,9 +18,6 @@ def authorize_request(credentials: HTTPAuthorizationCredentials):
 
 def get_puntos_recoleccion_collection(db=Depends(get_mongo_db)) -> Collection:
     return db["PuntosRecoleccion"]
-
-def get_rutas_collection(db=Depends(get_mongo_db)) -> Collection:
-    return db["Rutas"]
 
 def get_dias_recoleccion_collection(db=Depends(get_mongo_db)) -> Collection:
     return db["DiaRecoleccion"]
@@ -49,24 +45,18 @@ async def get_punto_recoleccion_by_id(
 async def create_punto_recoleccion(
     punto: PuntoRecoleccionSchema,
     puntos_collection: Collection = Depends(get_puntos_recoleccion_collection),
-    rutas_collection: Collection = Depends(get_rutas_collection),
-    dias_recoleccion_collection: Collection = Depends(get_dias_recoleccion_collection),  # Nueva dependencia para verificar el día de recolección
     credentials: HTTPAuthorizationCredentials = Depends(security),
 ):
-    ruta_existente = rutas_collection.find_one({"id": punto.id_Ruta})
-    if not ruta_existente:
-        raise HTTPException(status_code=404, detail="La ruta especificada no existe.")
-    
-    dia_recoleccion_existente = dias_recoleccion_collection.find_one({"id": punto.id_DiaRecoleccion})
-    if not dia_recoleccion_existente:
-        raise HTTPException(status_code=404, detail="El día de recolección especificado no existe.")
-    
+    authorize_request(credentials)
+
     punto_dict = punto.dict(by_alias=True)
+
+    if "geojson" not in punto_dict or not isinstance(punto_dict["geojson"], dict):
+        raise HTTPException(status_code=400, detail="El campo 'geojson' es obligatorio y debe ser un objeto válido.")
+
     punto_dict["id"] = str(puntos_collection.estimated_document_count() + 1)
     puntos_collection.insert_one(punto_dict)
     return punto_dict
-
-
 
 @router.put("/puntos_recoleccion/{id_punto}", response_model=PuntoRecoleccionSchema)
 async def update_punto_recoleccion(
@@ -76,7 +66,12 @@ async def update_punto_recoleccion(
     credentials: HTTPAuthorizationCredentials = Depends(security),
 ):
     authorize_request(credentials)
+
     punto_dict = punto.dict(by_alias=True)
+
+    if "geojson" not in punto_dict or not isinstance(punto_dict["geojson"], dict):
+        raise HTTPException(status_code=400, detail="El campo 'geojson' es obligatorio y debe ser un objeto válido.")
+
     result = puntos_collection.update_one({"id": id_punto}, {"$set": punto_dict})
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Punto de recolección no encontrado")

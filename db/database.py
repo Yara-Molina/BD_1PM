@@ -5,7 +5,6 @@ from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from typing import Generator
 
-# Configuración para PostgreSQL
 SQLALCHEMY_DATABASE_URL = 'postgresql+psycopg2://max:@localhost/postgres'
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
