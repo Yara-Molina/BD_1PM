@@ -13,8 +13,8 @@ class UsuarioBase(BaseModel):
     id_rol: int 
 
 class UsuarioRequest(UsuarioBase):
-     class config:
-      orm_mode=True
+    class config:
+        orm_mode=True
 
 class UsuarioResponse(UsuarioBase):
     id_usuario: int

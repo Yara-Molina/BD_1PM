@@ -1,23 +1,22 @@
 from pydantic import BaseModel
 from datetime import datetime
+from typing import Optional
 
 class MaterialInformativoBase(BaseModel):
-    id_material_informativo: int
+    titulo: str
     contenido: str
-    create_at: datetime
-    create_by: str
     id_usuario: int
+    path_imagen: Optional[str]=None
+    
 
     class Config:
         orm_mode = True
 
 class MaterialInformativoRequest(MaterialInformativoBase):
-      class Config:
-        orm_mode= True
+      pass
 
-        
 class MaterialInformativoResponse(MaterialInformativoBase):
     id_material_informativo: int
-    
+
     class Config:
-        orm_mode=True
+        orm_mode = True

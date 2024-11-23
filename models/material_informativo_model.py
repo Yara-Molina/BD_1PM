@@ -1,20 +1,17 @@
 import sys
 sys.path.append("C:\\Users\\cachi\\OneDrive\\Escritorio\\vsc\\FastApi\\APIREST (2)\\APIREST\\db")
 
-from sqlalchemy import Column, Integer, String, ForeignKey, TIMESTAMP, DateTime
+from sqlalchemy import Column, Integer, String, ForeignKey
 from db.database import Base
 from sqlalchemy.orm import relationship
 
 class MaterialInformativo(Base):
     __tablename__ = "Material_informativo"
-    
-    id_material_informativo = Column(Integer, primary_key=True, index=True)
-    contenido = Column(String(45), nullable=False)
-    create_at = Column(TIMESTAMP, nullable=False)
-    create_by = Column(String(45), nullable=False)
-    id_usuario = Column(Integer, ForeignKey("Usuario.id_usuario"), nullable=False)
-    id_media = Column(Integer, ForeignKey("Media.id_media"), nullable=False)
 
-    
+    id_material_informativo = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    titulo = Column(String(45), nullable=False)
+    contenido = Column(String(255), nullable=False)
+    id_usuario = Column(Integer, ForeignKey("Usuario.id_usuario"), nullable=False)
+    path_imagen = Column(String(255), nullable=True)
+
     usuario = relationship("Usuario", back_populates="material_informativo")
-    media = relationship("Media", backref="material_media", foreign_keys=[id_media])

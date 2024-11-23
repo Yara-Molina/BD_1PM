@@ -25,17 +25,11 @@ class RolResponse(BaseModel):
     create_at: datetime
     create_by: str
     
-class MediaResponse(BaseModel):
-    id_media: int
-    imagen_path: str
-    
     
 class MaterialInformativoResponse(BaseModel):
-    id_material_informativo: int
+    titulo: str
     contenido: str
-    create_at: datetime
-    create_by: str
-    usuario_id_usuario: int
+    id_usuario: int
 
 class Config:
         orm_mode = True    
