@@ -30,10 +30,14 @@ def verify_camion_exists(id_camion: str, camion_collection: Collection):
     if not camion:
         raise HTTPException(status_code=400, detail=f"El camión con ID {id_camion} no existe.")
 
-def verify_punto_recoleccion_exists(id_punto: str, puntos_collection: Collection):
-    punto = puntos_collection.find_one({"id": id_punto})
-    if not punto:
-        raise HTTPException(status_code=400, detail=f"El punto de recolección con ID {id_punto} no existe.")
+def verify_puntos_recoleccion_exist(ids_puntos: List[str], puntos_collection: Collection):
+    for id_punto in ids_puntos:
+        punto = puntos_collection.find_one({"id": id_punto})
+        if not punto:
+            raise HTTPException(
+                status_code=400,
+                detail=f"El punto de recolección con ID {id_punto} no existe."
+            )
 
 @router.get("/rutas", response_model=List[RutaSchema])
 async def get_rutas(ruta_collection: Collection = Depends(get_ruta_collection)):
@@ -61,11 +65,16 @@ async def create_ruta(
 
     if not ruta_dict.get("id_camion"):
         raise HTTPException(status_code=400, detail="El campo 'id_camion' es obligatorio.")
-    if not ruta_dict.get("id_punto_recoleccion"):
-        raise HTTPException(status_code=400, detail="El campo 'id_punto_recoleccion' es obligatorio.")
+    if not ruta_dict.get("id_puntos_recoleccion"):
+        raise HTTPException(status_code=400, detail="El campo 'id_puntos_recoleccion' es obligatorio.")
 
     verify_camion_exists(ruta_dict["id_camion"], camion_collection)
-    verify_punto_recoleccion_exists(ruta_dict["id_punto_recoleccion"], puntos_collection)
+    verify_puntos_recoleccion_exist(ruta_dict["id_puntos_recoleccion"], puntos_collection)
+
+    next_id = 1 
+    while ruta_collection.find_one({"id": str(next_id)}):
+        next_id += 1
+    ruta_dict["id"] = str(next_id)
 
     try:
         result = ruta_collection.insert_one(ruta_dict)
@@ -73,6 +82,7 @@ async def create_ruta(
         return RutaSchema(**ruta_dict).dict(by_alias=True)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al crear la ruta: {str(e)}")
+
 
 @router.put("/rutas/{ruta_id}", response_model=RutaSchema)
 async def update_ruta(
@@ -87,7 +97,7 @@ async def update_ruta(
     ruta_dict = ruta.dict()
 
     verify_camion_exists(ruta_dict["id_camion"], camion_collection)
-    verify_punto_recoleccion_exists(ruta_dict["id_punto_recoleccion"], puntos_collection)
+    verify_puntos_recoleccion_exist(ruta_dict["id_puntos_recoleccion"], puntos_collection)
 
     result = ruta_collection.update_one({"id": ruta_id}, {"$set": ruta_dict})
     if result.matched_count == 0:

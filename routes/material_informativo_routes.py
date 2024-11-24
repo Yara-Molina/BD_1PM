@@ -23,9 +23,17 @@ def authorize_request(credentials: HTTPAuthorizationCredentials):
     if not user_info or user_info.get("id_rol") != 1:
         raise HTTPException(status_code=403, detail="Acceso denegado: Permisos insuficientes")
 
+BASE_URL = "http://127.0.0.1:8000"  # Asegúrate de usar la ruta correcta
+
 @router.get('/material-informativo', status_code=status.HTTP_200_OK, response_model=List[MaterialInformativoResponse])
 def get_all_material_informativo(db: Session = Depends(get_db)):
-    return db.query(MaterialInformativo).all()
+    materials = db.query(MaterialInformativo).all()
+
+    for material in materials:
+        material.path_imagen = f"{BASE_URL}{material.path_imagen}"  # Ahora se añade correctamente a la URL completa
+
+    return materials
+
 
 @router.get('/material-informativo/{id_material_informativo}', status_code=status.HTTP_200_OK, response_model=MaterialInformativoResponse)
 def get_material_informativo_by_id(

@@ -8,7 +8,7 @@ from sqlalchemy.orm import relationship
 class Notification(Base):
     __tablename__ = "Notificacion"
   
-    id_notificaciones = Column(Integer, primary_key=True, index=True)
+    id_notificaciones = Column(Integer, primary_key=True, index=True,autoincrement=True )
     titulo = Column(String(100), nullable=False)  
     texto = Column(String(255), nullable=False)  
     tiempo_activo = Column(DateTime, nullable=False)

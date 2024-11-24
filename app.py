@@ -3,6 +3,7 @@ from fastapi.security import OAuth2PasswordBearer
 from starlette.middleware.base import BaseHTTPMiddleware
 from datetime import datetime
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 import sys
 
 sys.path.append("C:\\Users\\cachi\\OneDrive\\Escritorio\\vsc\\FastApi\\APIREST (2)\\APIREST\\db")
@@ -31,6 +32,8 @@ app.add_middleware(
     allow_methods=["*"], 
     allow_headers=["*"],  
 )
+
+app.mount("/uploads", StaticFiles(directory="uploaded_images"), name="uploaded_images")
 
 Base.metadata.create_all(bind=engine)
 

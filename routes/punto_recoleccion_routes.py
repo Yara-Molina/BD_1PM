@@ -54,9 +54,17 @@ async def create_punto_recoleccion(
     if "geojson" not in punto_dict or not isinstance(punto_dict["geojson"], dict):
         raise HTTPException(status_code=400, detail="El campo 'geojson' es obligatorio y debe ser un objeto válido.")
 
-    punto_dict["id"] = str(puntos_collection.estimated_document_count() + 1)
-    puntos_collection.insert_one(punto_dict)
-    return punto_dict
+    next_id = 1
+    while puntos_collection.find_one({"id": str(next_id)}):
+        next_id += 1
+    punto_dict["id"] = str(next_id)
+
+    try:
+        puntos_collection.insert_one(punto_dict)
+        return PuntoRecoleccionSchema(**punto_dict).dict(by_alias=True)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al crear el punto de recolección: {str(e)}")
+
 
 @router.put("/puntos_recoleccion/{id_punto}", response_model=PuntoRecoleccionSchema)
 async def update_punto_recoleccion(
