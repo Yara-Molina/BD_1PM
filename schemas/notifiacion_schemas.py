@@ -3,7 +3,6 @@ from datetime import datetime
 
 
 class NotificationBase(BaseModel):
-    id_notificaciones: int  
     titulo: str
     texto: str
     tiempo_activo: datetime

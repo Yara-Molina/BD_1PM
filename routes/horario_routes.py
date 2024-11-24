@@ -40,12 +40,20 @@ async def create_horario(
     credentials: HTTPAuthorizationCredentials = Depends(security),
 ):
     authorize_request(credentials)
+
     horario_dict = horario.dict(by_alias=True)
 
-    if "id" not in horario_dict:
-        horario_dict["id"] = str(horario_collection.estimated_document_count() + 1)
-    horario_collection.insert_one(horario_dict)
-    return horario_dict
+    next_id = 1
+    while horario_collection.find_one({"id": str(next_id)}):
+        next_id += 1
+    horario_dict["id"] = str(next_id)
+
+    try:
+        horario_collection.insert_one(horario_dict)
+        return HorarioSchema(**horario_dict).dict(by_alias=True)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al crear el horario: {str(e)}")
+
 
 @router.put("/horarios/{horario_id}", response_model=HorarioSchema)
 async def update_horario(

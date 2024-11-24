@@ -53,11 +53,14 @@ async def create_dia_recoleccion(
 
     verify_horario_exists(dia_dict["id_Horario"], horario_collection)
 
-    if "id" not in dia_dict:
-        dia_dict["id"] = str(dia_recoleccion_collection.estimated_document_count() + 1)
+    next_id = 1
+    while dia_recoleccion_collection.find_one({"id": str(next_id)}):
+        next_id += 1
+    dia_dict["id"] = str(next_id)
 
     dia_recoleccion_collection.insert_one(dia_dict)
     return dia_dict
+
 
 @router.put("/dias_recoleccion/{dia_id}", response_model=DiaRecoleccionSchema)
 async def update_dia_recoleccion(

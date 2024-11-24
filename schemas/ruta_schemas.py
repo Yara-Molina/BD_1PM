@@ -1,11 +1,11 @@
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Optional, List
 
 class RutaSchema(BaseModel):
     id: Optional[str] = Field(None, alias="id")
     Nombre_de_ruta: str
     id_camion: str
-    id_punto_recoleccion: str
+    id_puntos_recoleccion: List[str]
 
     class Config:
         allow_population_by_field_name = True
