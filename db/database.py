@@ -33,3 +33,6 @@ dia_recoleccion_collection = mongo_db["Dia_Recoleccion"]
 horario_collection = mongo_db["Horario"]
 puntos_recoleccion_collection = mongo_db["Puntos_Recoleccion"]
 rutas_collection = mongo_db["Rutas"]
+
+
+
