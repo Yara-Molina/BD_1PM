@@ -5,7 +5,7 @@ from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from typing import Generator
 
-SQLALCHEMY_DATABASE_URL = 'postgresql+psycopg2://max:@localhost/postgres'
+SQLALCHEMY_DATABASE_URL = 'postgresql+psycopg2://postgres:postgres@tuxbinback.integrador.xyz/postgres'
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
@@ -16,7 +16,6 @@ def get_db() -> Generator:
         yield db
     finally:
         db.close()
-
 
 MONGO_URI = "mongodb+srv://233295:vqQJoCCYobQgQDWi@max.rwdsl.mongodb.net/?retryWrites=true&w=majority&appName=Max"
 mongo_client = MongoClient(MONGO_URI, server_api=ServerApi('1'))

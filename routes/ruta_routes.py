@@ -55,20 +55,18 @@ async def get_ruta_by_id(ruta_id: str, ruta_collection: Collection = Depends(get
 async def create_ruta(
     ruta: RutaSchema,
     ruta_collection: Collection = Depends(get_ruta_collection),
-    camion_collection: Collection = Depends(get_camion_collection),
     puntos_collection: Collection = Depends(get_puntos_recoleccion_collection),
     credentials: HTTPAuthorizationCredentials = Depends(security),
 ):
     authorize_request(credentials)
 
+    print(f"Datos recibidos en la solicitud: {ruta}")
     ruta_dict = ruta.dict(by_alias=True)
+    print(f"Ruta a guardar: {ruta_dict}")
 
-    if not ruta_dict.get("id_camion"):
-        raise HTTPException(status_code=400, detail="El campo 'id_camion' es obligatorio.")
     if not ruta_dict.get("id_puntos_recoleccion"):
         raise HTTPException(status_code=400, detail="El campo 'id_puntos_recoleccion' es obligatorio.")
 
-    verify_camion_exists(ruta_dict["id_camion"], camion_collection)
     verify_puntos_recoleccion_exist(ruta_dict["id_puntos_recoleccion"], puntos_collection)
 
     next_id = 1 
@@ -82,6 +80,8 @@ async def create_ruta(
         return RutaSchema(**ruta_dict).dict(by_alias=True)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al crear la ruta: {str(e)}")
+
+
 
 
 @router.put("/rutas/{ruta_id}", response_model=RutaSchema)
