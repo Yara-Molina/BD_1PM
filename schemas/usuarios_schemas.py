@@ -3,7 +3,6 @@ from datetime import datetime
 
 
 class UsuarioBase(BaseModel):
-    id_usuario: int
     first_name: str
     last_name: str
     correo: str
